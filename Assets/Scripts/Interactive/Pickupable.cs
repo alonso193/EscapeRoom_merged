@@ -3,33 +3,57 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Pickupable : MonoBehaviour, IInteractive {
-    Dictionary<string, string> hitActions, carryActions;
+    public string interactiveName;
     public Vector3 CarryAngles;
     public Vector3 CarryPosition;
+    public float time = 1.0f;
+
+    Dictionary<string, string> hitActions, carryActions;
+    Transform camTransform;
+
+    private bool beingCarried;
+
+    private StorageUI storageUI;
 
     public void Start()
     {
         // Setup hitActions
         hitActions = new Dictionary<string, string>
         {
-            { "Button_X", "PickUp" }
+            { "Button_X", "Pick Up" },
         };
 
         // Setup carryActions
         carryActions = new Dictionary<string, string>
         {
-            { "Button_Circle", "Drop" }
+            { "Button_Circle", "Drop" },
         };
 
         // Setup Rigidbody
         GetComponent<Rigidbody>().useGravity = true;
+
+        // Reference to storage
+        storageUI = GameObject.FindWithTag("Scripts").GetComponent<StorageUI>();
     }
 
-    /**
-     * ====================
-     * H I T  A C T I O N S
-     * ====================
-     */
+    public void FixedUpdate()
+    {
+        // If being carried, update object position to follow camera
+        if (beingCarried) {
+            transform.position = Vector3.Lerp(transform.position, 
+                camTransform.position 
+                + camTransform.up * CarryPosition.y
+                + camTransform.forward * CarryPosition.z
+                + camTransform.right * CarryPosition.x,
+                time);
+        }
+    }
+
+    public string GetInteractiveName()
+    {
+        return interactiveName;
+    }
+
     public Dictionary<string, string> GetHitActions(GameObject interactor, GameObject other)
     {
         return hitActions;
@@ -38,8 +62,8 @@ public class Pickupable : MonoBehaviour, IInteractive {
     public void ExecuteHitAction(string actionName, GameObject interactor, GameObject other)
     {
         switch(actionName) {
-            case "PickUp":
-                PickUpAction(interactor);
+            case "Pick Up":
+                PickUpAction(interactor, other);
                 break;
             default:
                 Debug.Log("Invalid HitAction");
@@ -47,38 +71,43 @@ public class Pickupable : MonoBehaviour, IInteractive {
         }
     }
 
-    void PickUpAction(GameObject interactor)
+    void PickUpAction(GameObject interactor, GameObject carry)
     {
-        // Drop object if carrying
-        GameObject carryObject = interactor.GetComponent<ObjectInteractor>().carryObject;
-        if (carryObject != null) {
-            carryObject.GetComponent<IInteractive>().ExecuteCarryAction("Drop", interactor);
-        }
+        //// Return if no space left in storage and carry
+        //if (!storageUI.GetEmptySlots() && (carry != null)) return;
 
         // Adjust object physics for pick up
         GetComponent<Rigidbody>().useGravity = false;
         GetComponent<Rigidbody>().isKinematic = true;
-        Transform guide = interactor.GetComponent<Transform>().Find("CarryGuide");
-        if (guide != null) {
-            // Move object to player's hand
-            Transform transform = GetComponent<Transform>();
-            guide.position += CarryPosition;
-            transform.position = guide.position;
-            //transform.rotation = guide.rotation;
-            transform.SetParent(interactor.transform);
-            transform.eulerAngles = CarryAngles;
 
+        // Set camera transform
+        camTransform = Camera.main.transform;
+
+        // Set orientation
+        transform.SetParent(camTransform);
+        transform.localEulerAngles = CarryAngles;
+
+        // Set flag to carry
+        beingCarried = true;
+
+        // Unset hit object just in case the reticle didn't exit in time
+        interactor.GetComponent<ObjectInteractor>().UnsetHitObject();
+
+        gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+        if (carry == null) {
             // Set current object as carry reference
             interactor.GetComponent<ObjectInteractor>().carryObject = gameObject;
-            gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+        } else if (storageUI.GetEmptySlots()) {
+            // Store object in inventory
+            storageUI.UpdateStorage(gameObject);
+            gameObject.SetActive(false);
+        } else {
+            // If no space left, swap current with carry object
+            carry.GetComponent<IInteractive>().ExecuteCarryAction("Drop", interactor);
+            interactor.GetComponent<ObjectInteractor>().carryObject = gameObject;
         }
     }
 
-    /**
-     * ========================
-     * C A R R Y  A C T I O N S
-     * ========================
-     */
     public Dictionary<string, string> GetCarryActions(GameObject interactor)
     {
         return carryActions;
@@ -88,7 +117,6 @@ public class Pickupable : MonoBehaviour, IInteractive {
     {
         switch(actionName) {
             case "Drop":
-                Debug.Log("Executing Drop Action");
                 DropAction(interactor);
                 break;
             default:
@@ -99,22 +127,25 @@ public class Pickupable : MonoBehaviour, IInteractive {
 
     void DropAction(GameObject interactor)
     {
-        // Adjust object physics for drop
-        GetComponent<Rigidbody>().isKinematic = false;
-        GetComponent<Rigidbody>().useGravity = true;
-       Transform guide = interactor.GetComponent<Transform>().Find("CarryGuide");
-        if (guide != null) {
-            // Drop object from player's hand
-            Transform transform = GetComponent<Transform>();
-            transform.SetParent(null);
-            transform.position = guide.position;
-            // transform.rotation = guide.rotation;
-            transform.eulerAngles = CarryAngles;
-            guide.position -= CarryPosition;
-
+        // If storage UI is not active
+        if (!storageUI.GetStorageState()) {
             // Remove current object from carry reference
             interactor.GetComponent<ObjectInteractor>().carryObject = null;
-            gameObject.layer = LayerMask.NameToLayer("Default");
         }
+
+        // Set flag to don't carry
+        beingCarried = false;
+
+        // Drop object
+        GetComponent<Rigidbody>().isKinematic = false;
+        GetComponent<Rigidbody>().useGravity = true;
+        transform.SetParent(null);
+
+        // Make object hitable again
+        gameObject.layer = LayerMask.NameToLayer("Default");
+
+        // Unset camera transform
+        camTransform = null;
     }
+
 }

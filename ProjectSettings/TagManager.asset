@@ -17,6 +17,15 @@ TagManager:
   - Door8
   - Door9
   - Tree
+  - ActionCanvas
+  - Storage
+  - Scripts
+  - hat
+  - bat
+  - milkBox
+  - radio
+  - key
+  - dish
   layers:
   - Default
   - TransparentFX

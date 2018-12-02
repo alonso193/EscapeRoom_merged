@@ -4,6 +4,11 @@ using UnityEngine;
 
 interface IInteractive  {
     /**
+     * Return the name of the interactive object
+     */
+    string GetInteractiveName();
+
+    /**
      * ====================
      * H I T  A C T I O N S
      * ====================
