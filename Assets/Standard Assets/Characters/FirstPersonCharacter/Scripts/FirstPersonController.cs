@@ -84,6 +84,15 @@ namespace UnityStandardAssets.Characters.FirstPerson
             m_PreviouslyGrounded = m_CharacterController.isGrounded;
         }
 
+        public void SetWalkSpeed(float walkSpeed)
+        {
+            m_WalkSpeed = walkSpeed;
+        }
+
+        public float GetWalkSpeed()
+        {
+            return m_WalkSpeed;
+        }
 
         private void PlayLandingSound()
         {
@@ -108,7 +117,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
             float speed;
             GetInput(out speed);
             // always move along the camera forward as it is the direction that it being aimed at
-            Vector3 desiredMove = transform.forward*m_Input.y + transform.right*m_Input.x;
+            //Vector3 desiredMove = transform.forward*m_Input.y + transform.right*m_Input.x;
+            Vector3 desiredMove = m_Camera.transform.forward*m_Input.y + m_Camera.transform.right*m_Input.x;
 
             // get a normal for the surface that is being touched to move along it
             RaycastHit hitInfo;

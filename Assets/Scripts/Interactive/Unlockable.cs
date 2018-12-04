@@ -66,7 +66,13 @@ public class Unlockable : MonoBehaviour, IInteractive {
 
     void UnlockAction(GameObject other)
     {
+        // Unlock
         lockedState = false;
+
+        // Play unlock sound
+        GetComponent<AudioSource>().Play();
+
+        // Destroy unlock object
         Destroy(other);
     }
 
@@ -79,11 +85,6 @@ public class Unlockable : MonoBehaviour, IInteractive {
         iTweenArgs.Add("time", animationTime);
         iTweenArgs.Add("islocal", true);
         iTweenArgs.Add(movementType, movementPosition);
-        /*
-        iTweenArgs.Add("x", movementPosition.x);
-        iTweenArgs.Add("y", movementPosition.y);
-        iTweenArgs.Add("z", movementPosition.z);
-        */
 
         if (animateRotation)
             iTween.RotateTo(gameObject, iTweenArgs);

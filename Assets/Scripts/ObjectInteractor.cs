@@ -10,7 +10,7 @@ public class ObjectInteractor : MonoBehaviour {
 
     public GameObject actionsUICanvas;
     public Vector2 actionsUIBasePos;
-    public int actionsUIHeightDelta;
+    public float actionsUIHeightDelta;
 
     private Dictionary<string, string> actions;
     private List<string> buttons;

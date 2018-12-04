@@ -16,6 +16,9 @@ public class StorageUI : MonoBehaviour
     private ObjectInteractor playerInteractor;
     public Image carryImage, carryIcon;
 
+    private float dPadXPrev = 0, dPadYPrev = 0;
+    private bool dPadXReady = true, dPadYReady = true;
+
     [SerializeField] public Images images;
     [System.Serializable]
     public class Images
@@ -58,7 +61,7 @@ public class StorageUI : MonoBehaviour
 
     void SetVisibilityState()
     {
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetButtonDown("Pad_Press"))
         {
             storageState = !storageState;
             storage.SetActive(storageState);
@@ -122,19 +125,48 @@ public class StorageUI : MonoBehaviour
 
     void MoveThroughStorage()
     {
-        if (Input.GetAxisRaw("Mouse ScrollWheel") < 0)
-        {
-            if (currentSlot < playerDBSlots.Length - 1)
-                currentSlot++;
-            else
-                currentSlot = 0;
+        float dPadX = Input.GetAxisRaw("DPad_X");
+        float dPadY = Input.GetAxisRaw("DPad_Y");
+        const int numCols = 2;
+
+        if (dPadXPrev != 0 && dPadX == 0)
+            dPadXReady = true;
+        if (dPadYPrev != 0 && dPadY == 0)
+            dPadYReady = true;
+
+        dPadXPrev = dPadX;
+        dPadYPrev = dPadY;
+
+        // Move DPad right (or mouse scroll)
+        if ((dPadXReady && dPadX > 0) || Input.GetAxisRaw("Mouse ScrollWheel") > 0) {
+            dPadXReady = false;
+            currentSlot++;
+            currentSlot %= playerDBSlots.Length;
         }
-        if (Input.GetAxisRaw("Mouse ScrollWheel") > 0)
-        {
+
+        // Move DPad left (or mouse scroll)
+        if ((dPadXReady && dPadX < 0) || Input.GetAxisRaw("Mouse ScrollWheel") < 0) {
+            dPadXReady = false;
             if (currentSlot > 0)
                 currentSlot--;
             else
-                currentSlot = playerDBSlots.Length - 1;
+                currentSlot = playerDBSlots.Length-1;
+        }
+
+        // Move DPad up
+        if (dPadYReady && dPadY > 0) {
+            dPadYReady = false;
+            if (currentSlot >= numCols)
+                currentSlot -= numCols;
+            else
+                currentSlot = playerDBSlots.Length + (currentSlot-numCols);
+        }
+
+        // Move DPad down
+        if (dPadYReady && dPadY < 0) {
+            dPadYReady = false;
+            currentSlot += numCols;
+            currentSlot %= playerDBSlots.Length;
         }
     }
 
