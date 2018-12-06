@@ -26,6 +26,7 @@ TagManager:
   - radio
   - key
   - dish
+  - SafeBox
   layers:
   - Default
   - TransparentFX

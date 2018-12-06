@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SafeBoxButton : MonoBehaviour {
+public class SafeBoxButton : MonoBehaviour, IInteractive {
     public string interactiveName;
     public int buttonNumber;
     private Dictionary<string, string> hitActions;
+    private SafeBoxManager safeManager;
 
 	void Start () {
         // Setup hitActions
@@ -13,7 +14,14 @@ public class SafeBoxButton : MonoBehaviour {
         {
             { "Button_X", "Press" },
         };
+        // Reference to safe box manager
+        safeManager = GameObject.FindWithTag("SafeBox").GetComponent<SafeBoxManager>();
 	}
+
+    public string GetInteractiveName()
+    {
+        return interactiveName;
+    }
 
     public Dictionary<string, string> GetHitActions(GameObject interactor, GameObject other)
     {
@@ -34,7 +42,8 @@ public class SafeBoxButton : MonoBehaviour {
 
     void PressAction(GameObject interactor)
     {
-        Debug.Log("Press Action");
+        interactor.GetComponent<ObjectInteractor>().UnsetHitObject();
+        safeManager.AddNumber(buttonNumber);
     }
 
     public Dictionary<string, string> GetCarryActions(GameObject interactor)
