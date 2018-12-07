@@ -1,20 +1,31 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Playables;
 
 public class SafeBoxHandle : MonoBehaviour, IInteractive {
     public string interactiveName;
+    private GameObject safeBox;
+    private GameObject door;
+    private GameObject handle;
     private Dictionary<string, string> hitActions;
-    private GameObject safeManager;
+    private SafeBoxManager safeManager;
+    private SafeBoxInteractive safeInteract;
+    private Animator doorAnim;
+    private Animator handleAnim, handleCanvasAnim;
 
 	void Start () {
-        // Setup hitActions
-        hitActions = new Dictionary<string, string>
-        {
-            { "Button_X", "Open" },
-        };
-        // Reference to safe box manager
-        safeManager = GameObject.FindWithTag("SafeBox");
+        // Reference to safe box components
+        safeBox = GameObject.FindWithTag("SafeBox");
+        door = safeBox.transform.Find("Door").gameObject;
+        handle = door.transform.Find("Handle").gameObject;
+
+        safeManager = safeBox.GetComponent<SafeBoxManager>();
+        safeInteract = safeBox.GetComponent<SafeBoxInteractive>();
+
+        doorAnim = door.GetComponent<Animator>();
+        handleAnim = handle.GetComponent<Animator>();
+        handleCanvasAnim = GetComponent<Animator>();
 	}
 
     public string GetInteractiveName()
@@ -24,6 +35,12 @@ public class SafeBoxHandle : MonoBehaviour, IInteractive {
 
     public Dictionary<string, string> GetHitActions(GameObject interactor, GameObject other)
     {
+        var hitActions = new Dictionary<string, string>();
+
+        if (!safeManager.LockState) {
+            hitActions["Button_X"] = "Open";
+        }
+
         return hitActions;
     }
 
@@ -31,7 +48,7 @@ public class SafeBoxHandle : MonoBehaviour, IInteractive {
     {
         switch(actionName) {
             case "Open":
-                OpenAction(interactor);
+                StartCoroutine(OpenAction(interactor));
                 break;
             default:
                 Debug.Log("Invalid HitAction");
@@ -39,9 +56,24 @@ public class SafeBoxHandle : MonoBehaviour, IInteractive {
         }
     }
 
-    void OpenAction(GameObject interactor)
+    IEnumerator OpenAction(GameObject interactor)
     {
-        Debug.Log("Open Action");
+        // Trigger handle open animation
+        handleAnim.SetBool("safeBoxHandleOpen", true);
+        handleCanvasAnim.SetBool("safeBoxHandleOpen", true);
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForSeconds(handleAnim.GetCurrentAnimatorStateInfo(0).length+0.5f);
+
+        // Open safe box door
+        doorAnim.SetBool("safeBoxDoorOpen", true);
+        yield return new WaitForEndOfFrame();
+
+        // Leave safe box interaction
+        safeInteract.LeaveAction();
+
+        // Set safe box state to open
+        safeManager.IsOpen = true;
+        safeBox.GetComponent<BoxCollider>().enabled = false;
     }
 
     public Dictionary<string, string> GetCarryActions(GameObject interactor)

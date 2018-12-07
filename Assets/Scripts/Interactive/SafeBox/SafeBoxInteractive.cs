@@ -8,7 +8,6 @@ public class SafeBoxInteractive : MonoBehaviour, IInteractive {
     public float doorCanvasDistance;
 
     private Dictionary<string, string> hitActions;
-    private GameObject readCanvas;
     private GameObject doorCanvas;
 
     private bool examineInteraction;
@@ -19,27 +18,8 @@ public class SafeBoxInteractive : MonoBehaviour, IInteractive {
     private SafeBoxManager safeManager;
 
 	void Start () {
-        // Setup hitActions
-        hitActions = new Dictionary<string, string>
-        {
-            { "Button_X", "Examine" },
-        };
-		
-        //// Get readCanvas
-        //Transform readCanvasTransform = Camera.main.transform.Find("ReadCanvas");
-        //if (readCanvasTransform != null) {
-        //    readCanvas = readCanvasTransform.gameObject;
-        //}
         safeManager = GetComponent<SafeBoxManager>();
 	}
-
-    public void Update()
-    {
-  //      // If leave button pressed, restore object to original state
-		//if (examineInteraction && Input.GetButtonDown("Button_Circle")) {
-  //          Leave();
-  //      }
-    }
 
     public string GetInteractiveName()
     {
@@ -48,6 +28,11 @@ public class SafeBoxInteractive : MonoBehaviour, IInteractive {
 
     public Dictionary<string, string> GetHitActions(GameObject interactor, GameObject other)
     {
+        var hitActions = new Dictionary<string, string>();
+        if (!safeManager.IsOpen) {
+            hitActions["Button_X"] = "Examine";
+        }
+
         return hitActions;
     }
 
@@ -65,7 +50,6 @@ public class SafeBoxInteractive : MonoBehaviour, IInteractive {
 
     void ExamineAction(GameObject interactor)
     {
-        // Set reference to player
         player = interactor;
 
         // Disable First Person Controller movement
@@ -75,10 +59,8 @@ public class SafeBoxInteractive : MonoBehaviour, IInteractive {
         // Unset hit object
         player.GetComponent<ObjectInteractor>().UnsetHitObject();
 
-        // Ignore reticle raycast
-        gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
-
         // Set safe box as carry
+        gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
         player.GetComponent<ObjectInteractor>().carryObject = gameObject;
 
         // Initialize safe manager
@@ -101,7 +83,6 @@ public class SafeBoxInteractive : MonoBehaviour, IInteractive {
             doorCanvas.SetActive(true);
         }
 
-        // Set examine interaction flag
         examineInteraction = true;
     }
 
@@ -138,8 +119,6 @@ public class SafeBoxInteractive : MonoBehaviour, IInteractive {
 
         // Unset carry object
         player.GetComponent<ObjectInteractor>().carryObject = null;
-
-        // Enable reticle raycast
         gameObject.layer = LayerMask.NameToLayer("Default");
 
         // Enable First Person Controller movement

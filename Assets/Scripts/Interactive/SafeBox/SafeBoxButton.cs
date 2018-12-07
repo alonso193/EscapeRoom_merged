@@ -6,7 +6,10 @@ public class SafeBoxButton : MonoBehaviour, IInteractive {
     public string interactiveName;
     public int buttonNumber;
     private Dictionary<string, string> hitActions;
+    private GameObject safeBox;
     private SafeBoxManager safeManager;
+    private SafeBoxInteractive safeInteract;
+    private AudioSource buttonSound;
 
 	void Start () {
         // Setup hitActions
@@ -14,8 +17,11 @@ public class SafeBoxButton : MonoBehaviour, IInteractive {
         {
             { "Button_X", "Press" },
         };
-        // Reference to safe box manager
-        safeManager = GameObject.FindWithTag("SafeBox").GetComponent<SafeBoxManager>();
+        // Reference to safe box
+        safeBox = GameObject.FindWithTag("SafeBox");
+        safeManager = safeBox.GetComponent<SafeBoxManager>();
+        buttonSound = safeBox.GetComponents<AudioSource>()[0];
+        safeInteract = safeBox.GetComponent<SafeBoxInteractive>();
 	}
 
     public string GetInteractiveName()
@@ -42,8 +48,16 @@ public class SafeBoxButton : MonoBehaviour, IInteractive {
 
     void PressAction(GameObject interactor)
     {
+        bool leave = false;
         interactor.GetComponent<ObjectInteractor>().UnsetHitObject();
-        safeManager.AddNumber(buttonNumber);
+
+        // Add number to safe box screen
+        leave = safeManager.AddNumber(buttonNumber);
+        // Play button sound
+        buttonSound.Play();
+        // Leave safebox interaction if required
+        if (leave)
+            safeInteract.LeaveAction();
     }
 
     public Dictionary<string, string> GetCarryActions(GameObject interactor)
