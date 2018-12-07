@@ -6,6 +6,7 @@ public class ReadPickupable : MonoBehaviour, IInteractive {
     public string interactiveName;
 
     // Readable attributes
+    public float rotateSpeed = 2.5f;
     public Vector3 readCanvasPosition;
     public Vector3 readCanvasScale;
     public Vector3 readCanvasAngles;
@@ -31,6 +32,7 @@ public class ReadPickupable : MonoBehaviour, IInteractive {
         // Readable base
         readBase = new ReadableBase(gameObject,
                                     true,
+                                    rotateSpeed,
                                     readCanvasPosition,
                                     readCanvasScale,
                                     readCanvasAngles);

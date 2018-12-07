@@ -7,6 +7,7 @@ public class Readable : MonoBehaviour, IInteractive {
     public string interactiveName;
     Dictionary<string, string> hitActions;
 
+    public float rotateSpeed = 2.5f;
     public Vector3 readCanvasPosition;
     public Vector3 readCanvasScale;
     public Vector3 readCanvasAngles;
@@ -23,6 +24,7 @@ public class Readable : MonoBehaviour, IInteractive {
         // Readable base
         readBase = new ReadableBase(gameObject,
                                     false,
+                                    rotateSpeed,
                                     readCanvasPosition,
                                     readCanvasScale,
                                     readCanvasAngles);
@@ -73,6 +75,7 @@ public class ReadableBase {
     public bool readInteraction;
 
     private bool isPickupable;
+    private float rotateSpeed;
     private GameObject readObject;
     private GameObject readCanvas;
 
@@ -90,12 +93,14 @@ public class ReadableBase {
 
     public ReadableBase(GameObject readObject,
                         bool isPickupable,
+                        float rotateSpeed,
                         Vector3 readCanvasPosition,
                         Vector3 readCanvasScale,
                         Vector3 readCanvasAngles)
     {
         this.readObject = readObject;
         this.isPickupable = isPickupable;
+        this.rotateSpeed = rotateSpeed;
         this.readCanvasPosition = readCanvasPosition;
         this.readCanvasScale = readCanvasScale;
         this.readCanvasAngles = readCanvasAngles;
@@ -188,8 +193,17 @@ public class ReadableBase {
     public void Update()
     {
         // If leave button pressed, restore object to original state
-		if (readInteraction && Input.GetButtonDown("Button_Circle")) {
-            Leave();
+		if (readInteraction) {
+            if (Input.GetButtonDown("Button_Circle")) {
+                Leave();
+            } else {
+                if (Input.GetAxis("Horizontal") > 0) {
+                    readObject.transform.localRotation *= Quaternion.AngleAxis(rotateSpeed, Vector3.forward);
+                }
+                if (Input.GetAxis("Horizontal") < 0) {
+                    readObject.transform.localRotation *= Quaternion.AngleAxis(-rotateSpeed, Vector3.forward);
+                }
+            }
         }
     }
 }
