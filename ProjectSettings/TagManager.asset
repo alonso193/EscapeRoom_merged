@@ -27,6 +27,7 @@ TagManager:
   - key
   - dish
   - SafeBox
+  - Lighting
   layers:
   - Default
   - TransparentFX
