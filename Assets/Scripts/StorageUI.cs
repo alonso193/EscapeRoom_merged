@@ -14,7 +14,10 @@ public class StorageUI : MonoBehaviour
     private GameObject storage;
     private GameObject player;
     private ObjectInteractor playerInteractor;
-    public Image carryImage, carryIcon;
+    public Image carryImage, carryIcon, lanterImage, lanternIcon;
+    public bool lanternState = false;
+    public Sprite lantern;
+    private GameObject maincamera;
 
     private float dPadXPrev = 0, dPadYPrev = 0;
     private bool dPadXReady = true, dPadYReady = true;
@@ -36,6 +39,7 @@ public class StorageUI : MonoBehaviour
 
     private void Awake()
     {
+        maincamera = GameObject.FindWithTag("MainCamera");
         storage = GameObject.FindWithTag("Storage");
         storage.SetActive(storageState);
         player = GameObject.FindWithTag("Player");
@@ -56,6 +60,7 @@ public class StorageUI : MonoBehaviour
             UpdateCurrentSlot();
             RemoveItem();
             ChangeCarryObject();
+            TurnLantern();
         }
     }
 
@@ -103,6 +108,12 @@ public class StorageUI : MonoBehaviour
         {
             carryIcon.sprite = null;
         }
+
+        if(lanternState)
+        {
+            lanternIcon.sprite = lantern;
+        }
+
     }
 
     void UpdateCurrentSlot()
@@ -235,6 +246,29 @@ public class StorageUI : MonoBehaviour
     public bool GetStorageState()
     {
         return storageState;
+    }
+
+    public void SetActiveLantern()
+    {
+        lanternState = true;
+    }
+
+    public void TurnLantern()
+    {
+        if(lanternState)
+        {
+            if (Input.GetButtonDown("Button_Square"))
+            {
+                if(maincamera.GetComponent<Light>().intensity == 10)
+                {
+                    maincamera.GetComponent<Light>().intensity = 0;
+                }
+                else
+                {
+                    maincamera.GetComponent<Light>().intensity = 10;
+                }
+            }
+        }
     }
 
 }

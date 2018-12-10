@@ -28,6 +28,9 @@ TagManager:
   - dish
   - SafeBox
   - Lighting
+  - LightingTerrain
+  - MainDoor
+  - Lantern
   layers:
   - Default
   - TransparentFX
