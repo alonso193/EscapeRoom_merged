@@ -6,6 +6,7 @@ using UnityStandardAssets.Characters.FirstPerson;
 public class SafeBoxInteractive : MonoBehaviour, IInteractive {
     public string interactiveName;
     public float doorCanvasDistance;
+    public GameObject[] hideCanvasObjects;
 
     private Dictionary<string, string> hitActions;
     private GameObject doorCanvas;
@@ -14,6 +15,8 @@ public class SafeBoxInteractive : MonoBehaviour, IInteractive {
 
     private GameObject player;
     private float originalPlayerSpeed;
+
+    private Transform originalParent;
 
     private SafeBoxManager safeManager;
 
@@ -75,6 +78,16 @@ public class SafeBoxInteractive : MonoBehaviour, IInteractive {
             // Dettach door canvas from the safe box
             doorCanvasTransform.SetParent(null);
 
+            // Hide objects
+            player.GetComponent<ObjectInteractor>().excludeHitObjects.Add(gameObject);
+            foreach (var renderer in GetComponentsInChildren<MeshRenderer>()) {
+                renderer.enabled = false;
+            }
+            foreach (var obj in hideCanvasObjects) obj.SetActive(false);
+            originalParent = transform.parent;
+            transform.SetParent(null);
+            player.GetComponent<FirstPersonController>().m_GravityMultiplier = 0;
+
             // Place door canvas in front of the player
             //Vector3 forward = Vector3.Normalize(Vector3.ProjectOnPlane(camTransform.forward, Vector3.up));
             Vector3 forward = camTransform.forward;
@@ -116,6 +129,15 @@ public class SafeBoxInteractive : MonoBehaviour, IInteractive {
         // Hide safe box door canvas
         doorCanvas.transform.SetParent(transform);
         doorCanvas.SetActive(false);
+
+        // Show objects again
+        player.GetComponent<ObjectInteractor>().excludeHitObjects.Remove(gameObject);
+        foreach (var renderer in GetComponentsInChildren<MeshRenderer>()) {
+            renderer.enabled = true;
+        }
+        foreach (var obj in hideCanvasObjects) obj.SetActive(true);
+        transform.SetParent(originalParent);
+        player.GetComponent<FirstPersonController>().m_GravityMultiplier = 1;
 
         // Unset carry object
         player.GetComponent<ObjectInteractor>().carryObject = null;

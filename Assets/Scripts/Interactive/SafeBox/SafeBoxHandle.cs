@@ -64,16 +64,15 @@ public class SafeBoxHandle : MonoBehaviour, IInteractive {
         yield return new WaitForEndOfFrame();
         yield return new WaitForSeconds(handleAnim.GetCurrentAnimatorStateInfo(0).length+0.5f);
 
-        // Open safe box door
-        doorAnim.SetBool("safeBoxDoorOpen", true);
-        yield return new WaitForEndOfFrame();
-
         // Leave safe box interaction
         safeInteract.LeaveAction();
 
         // Set safe box state to open
         safeManager.IsOpen = true;
         safeBox.GetComponent<BoxCollider>().enabled = false;
+
+        // Open safe box door
+        doorAnim.SetBool("safeBoxDoorOpen", true);
     }
 
     public Dictionary<string, string> GetCarryActions(GameObject interactor)

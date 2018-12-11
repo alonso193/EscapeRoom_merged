@@ -6,6 +6,7 @@ using TMPro;
 public class ObjectInteractor : MonoBehaviour {
     public float interactRange;
     public GameObject carryObject;
+    public HashSet<GameObject> excludeHitObjects;
     private GameObject hitObject;
 
     public GameObject actionsUICanvas;
@@ -26,6 +27,7 @@ public class ObjectInteractor : MonoBehaviour {
             "Button_Square",
             "Button_Triangle"
         };
+        excludeHitObjects = new HashSet<GameObject>();
         storageUI = GameObject.FindWithTag("Scripts").GetComponent<StorageUI>();
 	}
 	
@@ -40,7 +42,7 @@ public class ObjectInteractor : MonoBehaviour {
         if (!interaction) return;
 
         // Check if some object was hit
-        if (hitObject != null) {
+        if (hitObject != null && !excludeHitObjects.Contains(hitObject)) {
             // Check if hit object is interactive
             IInteractive hitInteract = hitObject.GetComponent<IInteractive>();
 
