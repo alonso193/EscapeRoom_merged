@@ -28,6 +28,7 @@ TagManager:
   - dish
   - SafeBox
   - Lighting
+  - MainDoor
   layers:
   - Default
   - TransparentFX
