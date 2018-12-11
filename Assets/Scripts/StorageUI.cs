@@ -266,15 +266,24 @@ public class StorageUI : MonoBehaviour
             if (Input.GetButtonDown("Button_Square"))
             {
                 lanternOn = !lanternOn;
-                if (lanternOn) {
+                if (lanternOn)
+                {
                     maincamera.GetComponent<Light>().intensity = 7;
-                    lanternIcon.color = colorIcons[2];
-                    lanterImage.color = colorIcons[2];
-                } else {
+                } else
+                {
                     maincamera.GetComponent<Light>().intensity = 0;
-                    lanternIcon.color = colorIcons[0];
-                    lanterImage.color = colorIcons[0];
                 }
+            }
+
+            if (lanternOn)
+            {
+                lanternIcon.color = colorIcons[2];
+                lanterImage.color = colorIcons[2];
+            }
+            else
+            {
+                lanternIcon.color = colorIcons[0];
+                lanterImage.color = colorIcons[0];
             }
         }
     }
