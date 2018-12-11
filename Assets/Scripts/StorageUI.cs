@@ -16,6 +16,7 @@ public class StorageUI : MonoBehaviour
     private ObjectInteractor playerInteractor;
     public Image carryImage, carryIcon, lanterImage, lanternIcon;
     public bool lanternState = false;
+    private bool lanternOn = false;
     public Sprite lantern;
     private GameObject maincamera;
 
@@ -255,6 +256,7 @@ public class StorageUI : MonoBehaviour
     public void SetActiveLantern()
     {
         lanternState = true;
+        lanternOn = true;
     }
 
     public void TurnLantern()
@@ -263,25 +265,16 @@ public class StorageUI : MonoBehaviour
         {
             if (Input.GetButtonDown("Button_Square"))
             {
-                if (maincamera.GetComponent<Light>().intensity == 10)
-                {
+                lanternOn = !lanternOn;
+                if (lanternOn) {
+                    maincamera.GetComponent<Light>().intensity = 7;
+                    lanternIcon.color = colorIcons[2];
+                    lanterImage.color = colorIcons[2];
+                } else {
                     maincamera.GetComponent<Light>().intensity = 0;
+                    lanternIcon.color = colorIcons[0];
+                    lanterImage.color = colorIcons[0];
                 }
-                else
-                {
-                    maincamera.GetComponent<Light>().intensity = 10;
-                }
-            }
-
-            if (maincamera.GetComponent<Light>().intensity == 10)
-            {
-                lanternIcon.color = colorIcons[2];
-                lanterImage.color = colorIcons[2];
-            }
-            else
-            {
-                lanternIcon.color = colorIcons[0];
-                lanterImage.color = colorIcons[0];
             }
         }
     }

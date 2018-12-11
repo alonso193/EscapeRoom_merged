@@ -29,6 +29,8 @@ TagManager:
   - SafeBox
   - Lighting
   - MainDoor
+  - House
+  - Lantern
   layers:
   - Default
   - TransparentFX

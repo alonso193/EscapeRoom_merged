@@ -10,6 +10,7 @@ public class LanternInteractive : MonoBehaviour, IInteractive
     private GameObject maincamera;
     private GameObject mainDoor;
     private AudioSource closeDoorSound;
+    private Animator mainDoorAnim;
     private GameObject lantern;
 
     private StorageUI storageUI;
@@ -25,11 +26,11 @@ public class LanternInteractive : MonoBehaviour, IInteractive
     public void Start()
     {
         lights = GameObject.FindWithTag("Lighting");
-        maincamera = GameObject.FindWithTag("MainCamera");
+        maincamera = Camera.main.gameObject;
         mainDoor = GameObject.FindWithTag("MainDoor");
+        mainDoorAnim = mainDoor.GetComponent<Animator>();
+        closeDoorSound = mainDoor.GetComponent<AudioSource>();
         lantern = GameObject.FindWithTag("Lantern");
-        closeDoorSound = lantern.GetComponents<AudioSource>()[0];
-        storageUI = GameObject.FindWithTag("Scripts").GetComponent<StorageUI>();
 
         // Pickupable base
         pickupBase = new PickupableBase(gameObject,
@@ -59,7 +60,7 @@ public class LanternInteractive : MonoBehaviour, IInteractive
         switch (actionName)
         {
             case "Pick Up":
-                PickUpAction(interactor, other);
+                StartCoroutine(PickUpAction(interactor, other));
                 break;
             default:
                 Debug.Log("Invalid HitAction");
@@ -67,27 +68,21 @@ public class LanternInteractive : MonoBehaviour, IInteractive
         }
     }
 
-    void PickUpAction(GameObject interactor, GameObject carry)
+    IEnumerator PickUpAction(GameObject interactor, GameObject carry)
     {
-        maincamera.GetComponent<Light>().intensity = 10;
-        //storageUI.SetActiveLantern();
-        //closeDoorSound.Play();
+        StorageUI storage = interactor.transform.Find("Scripts").GetComponent<StorageUI>();
 
-        for (int i = 0; i < 84; i++)
-        {
-            mainDoor.transform.Rotate(Vector3.up, 50f * Time.deltaTime);
+        maincamera.GetComponent<Light>().intensity = 7;
+        storage.SetActiveLantern();
+        foreach (var renderer in GetComponentsInChildren<MeshRenderer>()) {
+            renderer.enabled = false;
         }
 
-        for (int i = 0; i < 41; i++)
-        {
-            mainDoor.transform.Translate(Vector3.left * 10f * Time.deltaTime);
-        }
+        mainDoorAnim.SetBool("mainDoorClose", true);
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForSeconds(mainDoorAnim.GetCurrentAnimatorStateInfo(0).length);
 
-        for (int i = 0; i < 19; i++)
-        {
-            mainDoor.transform.Translate(Vector3.forward * 10f * Time.deltaTime);
-        }
-
+        closeDoorSound.Play();
         Destroy(gameObject);
     }
 
