@@ -31,6 +31,8 @@ TagManager:
   - MainDoor
   - House
   - Lantern
+  - RoomScene
+  - MenuScene
   layers:
   - Default
   - TransparentFX

@@ -38,6 +38,8 @@ public class StorageUI : MonoBehaviour
         public string[] tag;
     }
 
+    //public GameObject[] scenes;
+
     private void Awake()
     {
         maincamera = GameObject.FindWithTag("MainCamera");
@@ -54,6 +56,12 @@ public class StorageUI : MonoBehaviour
     void Update()
     {
         SetVisibilityState();
+        //if (Input.GetKeyDown(KeyCode.C))
+        //{
+         //   Debug.Log("Entro");
+          //  scenes[0].SetActive(true);
+           // scenes[1].SetActive(false);
+        //}
         if (storageState)
         {
             MoveThroughStorage();
