@@ -196,7 +196,7 @@ public class PickupableBase {
         beingCarried = false;
 
         // Drop object
-        //pickupObject.GetComponent<Rigidbody>().isKinematic = false;
+        pickupObject.GetComponent<Rigidbody>().isKinematic = false;
         pickupObject.GetComponent<Rigidbody>().useGravity = true;
         pickupObject.transform.SetParent(null);
 
