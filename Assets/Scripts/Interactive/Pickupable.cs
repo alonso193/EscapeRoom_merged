@@ -165,7 +165,7 @@ public class PickupableBase {
     {
         // Adjust object physics for pick up
         pickupObject.GetComponent<Rigidbody>().useGravity = false;
-        //pickupObject.GetComponent<Rigidbody>().isKinematic = true;
+        pickupObject.GetComponent<Rigidbody>().isKinematic = true;
 
         // Set camera transform
         camTransform = Camera.main.transform;
