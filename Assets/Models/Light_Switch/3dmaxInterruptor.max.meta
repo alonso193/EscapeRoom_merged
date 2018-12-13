@@ -3,6 +3,23 @@ guid: dadfb33eeb0dae14dbc469ff68952629
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
+    100000: //RootNode
+    100002: Interruptor
+    100004: wall
+    400000: //RootNode
+    400002: Interruptor
+    400004: wall
+    2100000: blinn2
+    2100002: blinn1
+    2100004: lambert2
+    2300000: Interruptor
+    2300002: wall
+    3300000: Interruptor
+    3300002: wall
+    4300000: Interruptor
+    4300002: wall
+    7400000: Take 001
+    9500000: //RootNode
     2186277476908879412: ImportLogs
   externalObjects: {}
   materials:
@@ -56,7 +73,7 @@ ModelImporter:
     secondaryUVPackMargin: 4
     useFileScale: 1
     previousCalculatedGlobalScale: 1
-    hasPreviousCalculatedGlobalScale: 0
+    hasPreviousCalculatedGlobalScale: 1
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
