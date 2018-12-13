@@ -18,6 +18,7 @@ public class ReadPickupable : MonoBehaviour, IInteractive {
     public float lerpTime = 1.0f;
     public bool allowStore = true;
     private PickupableBase pickupBase;
+    
 
     private Dictionary<string, string> carryActions;
 
