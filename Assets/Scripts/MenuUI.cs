@@ -42,7 +42,7 @@ public class MenuUI : MonoBehaviour {
         dPadYPrev = dPadY;
 
         // Move DPad up
-        if ( (dPadYReady && dPadY > 0) || Input.GetAxisRaw("Mouse ScrollWheel") > 0 )
+        if ( (dPadYReady && dPadY < 0) || Input.GetAxisRaw("Mouse ScrollWheel") > 0 )
         {
             dPadYReady = false;
             if(currentButton != 0)
@@ -52,7 +52,7 @@ public class MenuUI : MonoBehaviour {
         }
 
         // Move DPad down
-        if ( (dPadYReady && dPadY < 0) || Input.GetAxisRaw("Mouse ScrollWheel") < 0 )
+        if ( (dPadYReady && dPadY > 0) || Input.GetAxisRaw("Mouse ScrollWheel") < 0 )
         {
             dPadYReady = false;
             if (currentButton < MainButtons.Length - 1)

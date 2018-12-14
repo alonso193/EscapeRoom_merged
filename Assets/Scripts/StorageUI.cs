@@ -176,7 +176,7 @@ public class StorageUI : MonoBehaviour
         }
 
         // Move DPad up
-        if (dPadYReady && dPadY > 0)
+        if (dPadYReady && dPadY < 0)
         {
             dPadYReady = false;
             if (currentSlot >= numCols)
@@ -186,7 +186,7 @@ public class StorageUI : MonoBehaviour
         }
 
         // Move DPad down
-        if (dPadYReady && dPadY < 0)
+        if (dPadYReady && dPadY > 0)
         {
             dPadYReady = false;
             currentSlot += numCols;

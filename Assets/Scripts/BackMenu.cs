@@ -8,7 +8,7 @@ public class BackMenu : MonoBehaviour {
 
 	void Update ()
     {
-        if (Input.GetKeyDown(KeyCode.C))
+        if (Input.GetButtonDown("Button_Options"))
         {
             scenes[0].SetActive(true);
             scenes[1].SetActive(false);

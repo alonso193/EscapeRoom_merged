@@ -15,6 +15,8 @@ public class ObjectInteractor : MonoBehaviour {
 
     private Dictionary<string, string> actions;
     private List<string> buttons;
+    private Dictionary<string, bool> buttonReady;
+    private Dictionary<string, bool> buttonPrev;
     private StorageUI storageUI;
     private bool interaction;
 
@@ -27,6 +29,13 @@ public class ObjectInteractor : MonoBehaviour {
             "Button_Square",
             "Button_Triangle"
         };
+        buttonReady = new Dictionary<string, bool>();
+        buttonPrev = new Dictionary<string, bool>();
+        foreach (var button in buttons) {
+            buttonReady[button] = true;
+            buttonPrev[button] = false;
+        }
+
         excludeHitObjects = new HashSet<GameObject>();
         storageUI = GameObject.FindWithTag("Scripts").GetComponent<StorageUI>();
 	}
@@ -128,12 +137,26 @@ public class ObjectInteractor : MonoBehaviour {
 
     string FindActionKeyDown(Dictionary<string, string> actions)
     {
+        string buttonDown = null;
+        bool buttonState = false;
+
         foreach (string button in buttons) {
-            if (actions.ContainsKey(button) && 
-                Input.GetButtonDown(button))
-                return button;
+            buttonState = Input.GetButtonDown(button);
+            if (buttonPrev[button] && !buttonState) {
+                buttonReady[button] = true;
+            }
+            buttonPrev[button] = buttonState;
+
+            if (actions.ContainsKey(button) && buttonState 
+                && buttonReady[button]) {
+
+                buttonReady[button] = false;
+                buttonDown = button;
+                break;
+            }
         }
-        return null;
+
+        return buttonDown;
     }
 
     void HideActionsUI()
